@@ -51,25 +51,31 @@ const input = fs.readFileSync(path.resolve(__dirname, 'input.txt')).toString()
     }
   }, {})
 
+// To run at full speed remove depth and console.logs. I just thought the depth logs were interesting.
 let depth = 0
 // part 2. remove next line to get part 1
-input.b.value = 3176
+// input.b.value = 3176
 function execute(fn) {
-  if (typeof (input[fn].value) === 'number') return input[fn].value
+  depth++
   const operandSymbols = input[fn].operands.map(x => {
     if (!isNaN(parseInt(x))) return parseInt(x)
     if (typeof input[x].value === 'number') return input[x].value
     return x
   })
-  if (operandSymbols.every(x => typeof x === 'number')) input[fn].value = input[fn].operation(...operandSymbols)
+  if (operandSymbols.every(x => typeof x === 'number')) {
+    console.log('Found all operands', fn)
+    input[fn].value = input[fn].operation(...operandSymbols)
+  }
   const operands = operandSymbols.map(operand => {
     if (typeof operand === 'string') {
-      if (typeof input[operand].value === 'number') return input[operand].value
+      console.log(depth, fn, 'IN')
       return execute(operand)
     } else {
       return operand
     }
   })
+  depth--
+  console.log(depth, fn, 'OUT')
   return input[fn].operation(...operands)
 }
 console.time('Execute a')
